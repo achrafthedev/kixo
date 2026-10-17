@@ -165,14 +165,42 @@
             <span class="eyebrow">For streamers</span>
             <h2>Your chat, on stream. In one click.</h2>
             <p class="big">
-              Kixo ships with a built-in <b>OBS chat overlay</b>: same emotes, badges and colours as the app, transparent background, auto-fading messages. Add it as a
-              Browser Source and you're done.
+              A free <b>OBS chat overlay</b> for any Kick channel: Kick &amp; 7TV emotes, badges, name colours, transparent background, auto-fading messages. Nothing to
+              install. Type your channel, copy the link, add it as a Browser Source.
             </p>
-            <div class="code">
-              <span class="code-label">OBS → Sources → Browser</span>
-              <code>http://127.0.0.1:4848/overlay?channel=ces4rrs&amp;fade=30</code>
-              <button class="copy" data-copy="http://127.0.0.1:4848/overlay?channel=ces4rrs&fade=30">Copy</button>
-              <span class="code-hint">127.0.0.1 = your own PC. Kixo serves the overlay locally while it's open, so there's no account, no extra service, and nothing leaves your computer. Swap <b>ces4rrs</b> for your channel.</span>
+            <div class="builder" id="builder">
+              <label class="b-chan">
+                <span>Your Kick channel</span>
+                <span class="b-input"><span class="b-prefix">kick.com/</span><input id="b-channel" value="ces4rrs" spellcheck="false" autocomplete="off" maxlength="40" /></span>
+              </label>
+              <div class="b-opts">
+                <label>
+                  <span>Hide after</span>
+                  <select id="b-fade">
+                    <option value="0">Never</option>
+                    <option value="15">15 s</option>
+                    <option value="30" selected>30 s</option>
+                    <option value="60">60 s</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Text size</span>
+                  <select id="b-size">
+                    <option value="14">Small</option>
+                    <option value="18" selected>Medium</option>
+                    <option value="24">Large</option>
+                    <option value="30">XL</option>
+                  </select>
+                </label>
+                <label class="b-check"><input type="checkbox" id="b-bg" /> <span>Bubbles</span></label>
+                <label class="b-check"><input type="checkbox" id="b-bots" /> <span>Hide bots</span></label>
+              </div>
+              <div class="code">
+                <span class="code-label">OBS → Sources → + → Browser → URL</span>
+                <code id="b-url">https://kixo.app/overlay?channel=ces4rrs&amp;fade=30</code>
+                <button class="copy" id="b-copy" data-copy="https://kixo.app/overlay?channel=ces4rrs&fade=30">Copy</button>
+                <span class="code-hint">Width 400 · Height 600 works well. Works even when Kixo isn't running.</span>
+              </div>
             </div>
             <ul class="checks">
               <li><b>Stream manager</b> — change your title and category without opening kick.com</li>
@@ -183,7 +211,8 @@
           <div class="scene" aria-label="Demo of the Kixo OBS overlay on CES4Rrs's stream">
             <img src="/assets/ces4rrs-scene.webp" alt="" loading="lazy" />
             <div class="scene-live"><span></span>LIVE · CES4Rrs</div>
-            <div class="overlay-demo" id="overlay-demo"></div>
+            <iframe class="overlay-frame" id="overlay-frame" title="Live preview of the Kixo overlay" src="/overlay?channel=ces4rrs&amp;fade=30&amp;demo=1" loading="lazy"></iframe>
+            <div class="scene-tag">Live preview</div>
           </div>
         </div>
       </section>
@@ -284,8 +313,8 @@
           <details>
             <summary>How do I add chat to OBS?</summary>
             <p>
-              In OBS add a <b>Browser Source</b> with <code>http://127.0.0.1:4848/overlay?channel=yourname</code> while Kixo is running. Options like <code>&amp;fade=30</code>,
-              <code>&amp;size=18</code> and <code>&amp;bots=0</code> let you tune it.
+              Use the <a href="#streamers">overlay builder</a> above, or add a <b>Browser Source</b> in OBS with <code>https://kixo.app/overlay?channel=yourname</code>. No
+              install or account needed. Options like <code>&amp;fade=30</code>, <code>&amp;size=18</code>, <code>&amp;bg=1</code> and <code>&amp;bots=0</code> let you tune it.
             </p>
           </details>
           <details>

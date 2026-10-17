@@ -43,7 +43,7 @@
 
 **Streamer tools**
 - **Stream manager**: change your stream title and category without opening kick.com
-- **OBS chat overlay**: a transparent browser source with emotes and badges (`http://127.0.0.1:4848/overlay?channel=you`)
+- **OBS chat overlay**: a transparent browser source with emotes and badges, with nothing to install: `https://kixo.app/overlay?channel=you` (build yours at [kixo.app](https://kixo.app/#streamers))
 - Always-on-top and adjustable window opacity, so chat can sit on top of a game
 
 **App**

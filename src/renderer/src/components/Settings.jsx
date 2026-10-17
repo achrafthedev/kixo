@@ -255,13 +255,13 @@ function OverlayInfo() {
   const channels = useStore((s) => s.channels)
   const user = useStore((s) => s.user)
   const slug = user?.username?.toLowerCase() || channels[0]?.slug || 'yourchannel'
-  const url = `http://127.0.0.1:${port}/overlay?channel=${slug}`
+  const url = `https://kixo.app/overlay?channel=${slug}&fade=30`
   return (
     <>
       <h3>OBS chat overlay</h3>
       <p className="dim small">
-        Show your chat on stream with Kixo's emotes, 7TV and badges. In OBS add a <b>Browser Source</b> with the URL below. Kixo must be running; the channel
-        joins automatically.
+        Show your chat on stream with Kick &amp; 7TV emotes and badges. In OBS add a <b>Browser Source</b> with the URL below. It works even when Kixo is closed.
+        Customise it at <a onClick={() => window.kixo.open('https://kixo.app/#streamers')}>kixo.app</a>.
       </p>
       <div className="copy-row">
         <code>{url}</code>
@@ -278,8 +278,12 @@ function OverlayInfo() {
           <tr><td><code>bots=0</code></td><td>Hide bot messages</td></tr>
           <tr><td><code>badges=0</code></td><td>Hide badges</td></tr>
           <tr><td><code>bg=1</code></td><td>Dark bubble behind each message</td></tr>
+          <tr><td><code>7tv=0</code></td><td>Hide 7TV emotes</td></tr>
         </tbody>
       </table>
+      <p className="dim small">
+        Backup option: while Kixo is open it also serves the overlay locally at <code>http://127.0.0.1:{port}/overlay?channel={slug}</code>.
+      </p>
     </>
   )
 }

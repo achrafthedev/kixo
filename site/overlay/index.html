@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Kixo chat overlay</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/logo.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: transparent;
+        overflow: hidden;
+      }
+      body {
+        font: 700 var(--size, 18px) / 1.4 Inter, 'Segoe UI', system-ui, sans-serif;
+        color: #fff;
+      }
+      #chat {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .m {
+        padding: 3px 8px;
+        border-radius: 8px;
+        word-wrap: break-word;
+        text-shadow: 0 1px 2px rgb(0 0 0 / 0.95), 0 0 6px rgb(0 0 0 / 0.65);
+        animation: in 0.25s ease-out;
+        transition: opacity 0.6s;
+      }
+      .bg .m {
+        background: rgb(10 12 16 / 0.72);
+        text-shadow: none;
+      }
+      .m.out {
+        opacity: 0;
+      }
+      @keyframes in {
+        from {
+          transform: translateX(-12px);
+          opacity: 0;
+        }
+      }
+      .b {
+        height: 1.1em;
+        vertical-align: -0.18em;
+        margin-right: 4px;
+        border-radius: 3px;
+      }
+      .n {
+        font-weight: 900;
+      }
+      .t {
+        font-weight: 700;
+      }
+      .e {
+        height: 1.8em;
+        vertical-align: middle;
+        margin: -0.3em 1px;
+      }
+      .r {
+        display: block;
+        font-size: 0.72em;
+        opacity: 0.75;
+      }
+      #hint {
+        position: absolute;
+        left: 12px;
+        bottom: 12px;
+        font: 700 14px Inter, system-ui, sans-serif;
+        color: #fff;
+        background: rgb(0 0 0 / 0.65);
+        padding: 8px 12px;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="chat"></div>
+    <div id="hint" hidden></div>
+    <script>
+      // Kixo hosted overlay: kixo.app/overlay?channel=<slug>
+      // Options: fade=<s> size=<px> max=<n> bots=0 badges=0 bg=1 7tv=0 demo=1
+      const p = new URLSearchParams(location.search)
+      const slug = (p.get('channel') || '').trim().toLowerCase().replace(/[^a-z0-9_-]/g, '')
+      const fade = Number(p.get('fade') || 0)
+      const max = Math.min(Number(p.get('max') || 20), 100)
+      const showBots = p.get('bots') !== '0'
+      const showBadges = p.get('badges') !== '0'
+      const use7tv = p.get('7tv') !== '0'
+      const demo = p.get('demo') === '1'
+      if (p.get('size')) document.body.style.setProperty('--size', Math.min(Math.max(Number(p.get('size')), 10), 48) + 'px')
+      if (p.get('bg') === '1') document.body.classList.add('bg')
+
+      const chat = document.getElementById('chat')
+      const hint = document.getElementById('hint')
+      const say = (t) => ((hint.hidden = !t), (hint.textContent = t || ''))
+      const BOTS = new Set(['botrix', 'kicklet', 'kickbot', 'streamelements', 'fossabot', 'nightbot', 'sery_bot', 'moobot'])
+      const LEGACY = { moderator: '#00c7ff', vip: '#ff9d00', og: '#1f9f6f', founder: '#b0007a', verified: '#1fb15b', broadcaster: '#e9113c', staff: '#53fc18', sub_gifter: '#7b4bff', subscriber: '#53fc18' }
+      let subBadges = []
+      const stv = new Map()
+
+      const el = (tag, cls, text) => {
+        const e = document.createElement(tag)
+        if (cls) e.className = cls
+        if (text != null) e.textContent = text
+        return e
+      }
+      const img = (cls, src, alt) => {
+        const i = el('img', cls)
+        i.src = src
+        i.alt = alt || ''
+        return i
+      }
+
+      function badgesFor(identity) {
+        const v2 = (identity?.badges_v2 || []).filter((b) => b.image_url && b.selected !== false)
+        if (v2.length) return v2.sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)).map((b) => img('b', b.image_url, b.name))
+        return (identity?.badges || [])
+          .map((b) => {
+            if (b.type === 'subscriber') {
+              let src = null
+              for (const s of subBadges) if ((b.count || 1) >= s.months) src = s.src
+              if (src) return img('b', src, 'sub')
+            }
+            const c = LEGACY[b.type]
+            if (!c) return null
+            const s = el('span', 'b')
+            s.style.cssText = `display:inline-block;width:1.05em;background:${c}`
+            return s
+          })
+          .filter(Boolean)
+      }
+
+      function appendContent(row, content) {
+        const re = /\[emote:(\d+):([^\]]*)\]/g
+        let last = 0
+        const words = (text) => {
+          for (const part of text.split(/(\s+)/)) {
+            if (!part) continue
+            const e = use7tv && stv.get(part)
+            if (e) row.append(img('e', e, part))
+            else row.append(el('span', 't', part))
+          }
+        }
+        for (const m of content.matchAll(re)) {
+          words(content.slice(last, m.index))
+          row.append(img('e', `https://files.kick.com/emotes/${m[1]}/fullsize`, m[2]))
+          last = m.index + m[0].length
+        }
+        words(content.slice(last))
+      }
+
+      function render(msg) {
+        const s = msg.sender || {}
+        let meta = msg.metadata
+        if (typeof meta === 'string') try { meta = JSON.parse(meta) } catch { meta = null }
+        const isBot = meta?.sender_type === 'bot' || BOTS.has((s.username || '').toLowerCase())
+        if (!showBots && isBot) return
+        const row = el('div', 'm')
+        row.dataset.id = msg.id
+        row.dataset.user = s.id
+        if (msg.type === 'reply' && meta?.original_sender?.username) row.append(el('span', 'r', '↪ @' + meta.original_sender.username))
+        if (showBadges) row.append(...badgesFor(s.identity))
+        const name = el('span', 'n', s.username || '')
+        if (s.identity?.color) name.style.color = s.identity.color
+        row.append(name, el('span', 't', ': '))
+        appendContent(row, msg.content || '')
+        chat.append(row)
+        while (chat.children.length > max) chat.firstChild.remove()
+        if (fade > 0)
+          setTimeout(() => {
+            row.classList.add('out')
+            setTimeout(() => row.remove(), 700)
+          }, fade * 1000)
+      }
+
+      function onEvent(event, data) {
+        const name = (event || '').replace(/^App\\Events\\/, '')
+        if (name === 'ChatMessageEvent') render(data)
+        else if (name === 'MessageDeletedEvent') chat.querySelector(`[data-id="${CSS.escape(String(data?.message?.id))}"]`)?.remove()
+        else if (name === 'UserBannedEvent') chat.querySelectorAll(`[data-user="${CSS.escape(String(data?.user?.id))}"]`).forEach((n) => n.remove())
+        else if (name === 'ChatroomClearEvent') chat.replaceChildren()
+      }
+
+      async function load7tv(userId) {
+        if (!use7tv) return
+        const add = (set) => set?.emotes?.forEach((e) => stv.set(e.name, `https:${e.data?.host?.url || '//cdn.7tv.app/emote/' + e.id}/2x.webp`))
+        try {
+          add(await (await fetch('https://7tv.io/v3/emote-sets/global')).json())
+        } catch {}
+        try {
+          add((await (await fetch(`https://7tv.io/v3/users/kick/${userId}`)).json()).emote_set)
+        } catch {}
+      }
+
+      let backoff = 1000
+      async function connect(chatroomId) {
+        let token
+        try {
+          const r = await fetch('/api/rt/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ client_id: crypto.randomUUID() })
+          })
+          token = (await r.json()).data.token
+        } catch {
+          return retry(chatroomId)
+        }
+        const ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/rt`)
+        let refresh
+        ws.onopen = () => {
+          ws.send(JSON.stringify({ id: 1, connect: { token, name: 'js' } }) + '\n' + JSON.stringify({ id: 2, subscribe: { channel: `chatrooms.${chatroomId}.v2` } }))
+        }
+        ws.onmessage = (e) => {
+          for (const line of String(e.data).split('\n')) {
+            if (!line) continue
+            if (line === '{}') {
+              ws.send('{}')
+              continue
+            }
+            let m
+            try {
+              m = JSON.parse(line)
+            } catch {
+              continue
+            }
+            if (m.connect) {
+              backoff = 1000
+              if (!demo) say('')
+              if (m.connect.ttl) refresh = setTimeout(() => ws.close(), Math.max(30, m.connect.ttl - 90) * 1000)
+            } else if (m.push?.pub) {
+              const d = m.push.pub.data || {}
+              let payload = d.data
+              if (typeof payload === 'string') try { payload = JSON.parse(payload) } catch {}
+              onEvent(d.event, payload)
+            }
+          }
+        }
+        ws.onclose = () => {
+          clearTimeout(refresh)
+          retry(chatroomId)
+        }
+      }
+      function retry(chatroomId) {
+        setTimeout(() => connect(chatroomId), backoff)
+        backoff = Math.min(backoff * 2, 30000)
+      }
+
+      function startDemo() {
+        const c4 = slug === 'ces4rrs'
+        const E = (id, n) => `[emote:${id}:${n}]`
+        const em = c4
+          ? [E(2488264, 'ces4rlyhype'), E(2488258, 'ces4rlyhi'), E(3280341, 'ces4rlyw9'), E(2488194, 'ces4rlyhehee'), E(6155726, 'ces4rlynoway')]
+          : [E(37226, 'KEKW'), E(37218, 'Clap'), E(5756671, 'GIGACHAD'), E(37227, 'LULW'), E(5756668, 'EZ')]
+        const lines = [
+          ['nightowl_ma', '#00C7FF', [{ type: 'subscriber', count: 3 }], `LETS GOOO ${em[0]}`],
+          ['lfakir', '#FFB020', [{ type: 'og' }], `hello chat ${em[1]}`],
+          ['bunny_fan212', '#FF6BD6', [{ type: 'vip' }], `${em[2]} ${em[2]} ${em[2]}`],
+          ['youssef_exe', '#9CFF57', [], `no way ${em[4]}`],
+          ['kenitra_king', '#4DD0E1', [{ type: 'subscriber', count: 9 }], `that was clean ${em[3]}`],
+          ['sara.gta', '#A970FF', [{ type: 'moderator' }], `GG everyone 👑`]
+        ]
+        let i = 0
+        const tick = () => {
+          const [u, color, badges, content] = lines[i++ % lines.length]
+          render({ id: 'demo-' + i, content, sender: { id: i, username: u, identity: { color, badges } } })
+        }
+        for (let k = 0; k < 3; k++) tick()
+        setInterval(tick, 2200)
+      }
+
+      ;(async () => {
+        if (!slug) return say('Kixo overlay: add ?channel=yourname to the URL')
+        if (demo) startDemo()
+        let ch
+        try {
+          const r = await fetch(`/api/channel/${slug}`)
+          if (!r.ok) throw 0
+          ch = await r.json()
+        } catch {
+          return say(`Kixo overlay: channel "${slug}" not found`)
+        }
+        subBadges = (ch.subscriber_badges || []).map((b) => ({ months: b.months, src: b.badge_image?.src })).sort((a, b) => a.months - b.months)
+        load7tv(ch.user_id)
+        connect(ch.chatroom.id)
+      })()
+    </script>
+  </body>
+</html>
