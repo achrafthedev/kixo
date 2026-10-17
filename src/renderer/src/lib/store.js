@@ -45,6 +45,7 @@ export const store = createStore({
   authMode: 'none',
   byoClientId: '',
   hasByoSecret: false,
+  useByo: false,
   version: '',
   overlayPort: 4848,
   settings: DEFAULT_SETTINGS,

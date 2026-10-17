@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Kixo · Logging in</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/logo.svg" />
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #07080a;
+        color: #eef0f3;
+        font: 16px/1.5 Inter, 'Segoe UI', system-ui, sans-serif;
+        text-align: center;
+        padding: 20px;
+      }
+      .logo {
+        font-size: 48px;
+        font-weight: 900;
+        letter-spacing: -2px;
+        color: #53fc18;
+      }
+      p {
+        color: #aeb5c1;
+        max-width: 420px;
+        margin: 10px auto;
+      }
+      a {
+        color: #53fc18;
+      }
+      .err {
+        color: #ff6b6b;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="logo">kixo</div>
+      <p id="msg">Returning to Kixo…</p>
+      <p id="sub"></p>
+    </main>
+    <script>
+      // Kick redirects here after login; hand the code to the Kixo desktop app,
+      // which is listening on localhost and finishes the PKCE exchange itself.
+      const q = new URLSearchParams(location.search)
+      const msg = document.getElementById('msg')
+      const sub = document.getElementById('sub')
+      if (q.get('error')) {
+        msg.className = 'err'
+        msg.textContent = 'Login was cancelled or failed.'
+        sub.textContent = q.get('error_description') || q.get('error')
+      } else if (q.get('code') && q.get('state')) {
+        const target = 'http://localhost:53682/callback?' + new URLSearchParams({ code: q.get('code'), state: q.get('state') })
+        history.replaceState(null, '', '/auth/callback')
+        location.replace(target)
+        setTimeout(() => {
+          msg.textContent = 'If nothing happens, make sure Kixo is open, then try logging in again.'
+          sub.innerHTML = 'Don\'t have Kixo yet? <a href="/#download">Download it here</a>.'
+        }, 3000)
+      } else {
+        msg.textContent = 'Nothing to do here.'
+        sub.innerHTML = '<a href="/">Go to kixo.app</a>'
+      }
+    </script>
+  </body>
+</html>

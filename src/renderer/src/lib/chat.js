@@ -25,6 +25,7 @@ export async function init() {
     authMode: s.authMode,
     byoClientId: s.byoClientId,
     hasByoSecret: s.hasByoSecret,
+    useByo: s.useByo,
     version: s.version,
     overlayPort: s.overlayPort,
     settings: { ...DEFAULT_SETTINGS, ...s.settings },
@@ -386,5 +387,5 @@ export async function logout() {
 
 export async function refreshAuthState() {
   const s = await k.getState()
-  store.set({ authMode: s.authMode, byoClientId: s.byoClientId, hasByoSecret: s.hasByoSecret, user: s.user })
+  store.set({ authMode: s.authMode, byoClientId: s.byoClientId, hasByoSecret: s.hasByoSecret, useByo: s.useByo, user: s.user })
 }

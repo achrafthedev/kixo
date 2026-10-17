@@ -4,7 +4,11 @@
 import { createServer } from 'node:http'
 import worker from './worker.js'
 
-const env = { KICK_CLIENT_ID: process.env.KICK_CLIENT_ID, KICK_CLIENT_SECRET: process.env.KICK_CLIENT_SECRET }
+const env = {
+  KICK_CLIENT_ID: process.env.KICK_CLIENT_ID,
+  KICK_CLIENT_SECRET: process.env.KICK_CLIENT_SECRET,
+  REDIRECT_URI: process.env.REDIRECT_URI
+}
 if (!env.KICK_CLIENT_ID || !env.KICK_CLIENT_SECRET) {
   console.error('Set KICK_CLIENT_ID and KICK_CLIENT_SECRET')
   process.exit(1)

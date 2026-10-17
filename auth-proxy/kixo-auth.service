@@ -1,0 +1,24 @@
+# /etc/systemd/system/kixo-auth.service — Kixo OAuth token-exchange proxy
+# Secrets live in /opt/kixo-auth/.env (root:kixoauth 640):
+#   KICK_CLIENT_ID=...  KICK_CLIENT_SECRET=...  REDIRECT_URI=https://kixo.app/auth/callback  PORT=4200
+[Unit]
+Description=Kixo auth proxy (Kick OAuth token exchange)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=kixoauth
+Group=kixoauth
+WorkingDirectory=/opt/kixo-auth
+EnvironmentFile=/opt/kixo-auth/.env
+ExecStart=/usr/bin/node /opt/kixo-auth/server.mjs
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+MemoryMax=128M
+
+[Install]
+WantedBy=multi-user.target
