@@ -45,7 +45,7 @@ test('normalizeChat: own messages are never mentions; bots detected', () => {
   assert.equal(bot.user.badges.length, 1)
 })
 
-test('badges: badges_v2 preferred, unselected hidden, legacy subscriber uses channel art', () => {
+test('badges: unselected cosmetics hidden, subscriber uses channel art, roles ordered like kick.com', () => {
   const v2 = resolveBadges({
     badges_v2: [
       { name: 'level', image_url: 'l.png', selected: false },
@@ -59,8 +59,27 @@ test('badges: badges_v2 preferred, unselected hidden, legacy subscriber uses cha
   ]
   assert.equal(subBadgeFor(subs, 8), 's6')
   const legacy = resolveBadges({ badges: [{ type: 'subscriber', count: 3 }, { type: 'moderator' }] }, subs)
-  assert.equal(legacy[0].src, 's1')
-  assert.equal(legacy[1].title, 'Moderator')
+  assert.equal(legacy[0].title, 'Moderator')
+  assert.equal(legacy[1].src, 's1')
+})
+
+test('badges: channel roles (VIP, OG, mod) shown alongside selected global badges', () => {
+  // Real shape from a Kick chat message (roles in `badges`, cosmetics in `badges_v2`)
+  const out = resolveBadges({
+    badges: [
+      { type: 'og', text: 'OG', sort_order: 7 },
+      { type: 'vip', text: 'VIP', sort_order: 5 },
+      { type: 'moderator', text: 'Moderator', sort_order: 12 }
+    ],
+    badges_v2: [
+      { name: 'level', badge_type: 'global', image_url: 'lvl.png', metadata: { level: 29 }, selected: true, sort_order: 1 },
+      { name: 'kick_whale', badge_type: 'global', image_url: 'w.png', selected: false, sort_order: 3 }
+    ]
+  })
+  assert.deepEqual(
+    out.map((b) => b.title),
+    ['Moderator', 'VIP', 'OG', 'Level 29']
+  )
 })
 
 test('normalizeEvent: bans, deletes, subs, gifts', () => {
