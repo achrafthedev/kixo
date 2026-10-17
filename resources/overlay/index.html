@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Kixo overlay</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: transparent;
+        overflow: hidden;
+      }
+      body {
+        font: 700 var(--size, 18px) / 1.4 'Inter', 'Segoe UI', system-ui, sans-serif;
+        color: #fff;
+        text-shadow: 0 1px 2px rgb(0 0 0 / 0.9), 0 0 6px rgb(0 0 0 / 0.6);
+      }
+      #chat {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .m {
+        padding: 3px 8px;
+        border-radius: 8px;
+        word-wrap: break-word;
+        animation: in 0.25s ease-out;
+        transition: opacity 0.6s;
+      }
+      .bg .m {
+        background: rgb(10 12 16 / 0.72);
+        text-shadow: none;
+      }
+      .m.out {
+        opacity: 0;
+      }
+      @keyframes in {
+        from {
+          transform: translateX(-12px);
+          opacity: 0;
+        }
+      }
+      .b {
+        height: 1.1em;
+        vertical-align: -0.18em;
+        margin-right: 4px;
+        border-radius: 3px;
+      }
+      .n {
+        font-weight: 800;
+      }
+      .t {
+        font-weight: 600;
+      }
+      .e {
+        height: 1.8em;
+        vertical-align: middle;
+        margin: -0.3em 1px;
+      }
+      .r {
+        font-size: 0.75em;
+        opacity: 0.7;
+        display: block;
+      }
+      #hint {
+        position: absolute;
+        left: 12px;
+        bottom: 12px;
+        font: 600 14px system-ui;
+        color: #fff;
+        background: rgb(0 0 0 / 0.6);
+        padding: 8px 12px;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="chat"></div>
+    <div id="hint" hidden></div>
+    <script>
+      const p = new URLSearchParams(location.search)
+      const channel = (p.get('channel') || '').toLowerCase()
+      const fade = Number(p.get('fade') || 0)
+      const max = Number(p.get('max') || 30)
+      const showBots = p.get('bots') !== '0'
+      const showBadges = p.get('badges') !== '0'
+      if (p.get('size')) document.body.style.setProperty('--size', p.get('size') + 'px')
+      if (p.get('bg') === '1') document.body.classList.add('bg')
+      const chat = document.getElementById('chat')
+      const hint = document.getElementById('hint')
+
+      if (!channel) {
+        hint.hidden = false
+        hint.textContent = 'Kixo overlay: add ?channel=yourname to the URL'
+      }
+
+      const el = (tag, cls, text) => {
+        const e = document.createElement(tag)
+        if (cls) e.className = cls
+        if (text != null) e.textContent = text
+        return e
+      }
+
+      function render(m) {
+        if (!showBots && m.isBot) return
+        const row = el('div', 'm')
+        row.dataset.id = m.id
+        row.dataset.user = m.user.id
+        if (m.reply) row.append(el('span', 'r', '↪ @' + m.reply.username))
+        if (showBadges)
+          for (const b of m.user.badges || []) {
+            const img = el('img', 'b')
+            img.src = b.src
+            row.append(img)
+          }
+        const name = el('span', 'n', m.user.username)
+        if (m.user.color) name.style.color = m.user.color
+        row.append(name, el('span', 't', ': '))
+        for (const s of m.segments) {
+          if (s.type === 'emote') {
+            const img = el('img', 'e')
+            img.src = s.url
+            img.alt = s.name
+            row.append(img)
+          } else row.append(el('span', 't', s.text))
+        }
+        chat.append(row)
+        while (chat.children.length > max) chat.firstChild.remove()
+        if (fade > 0)
+          setTimeout(() => {
+            row.classList.add('out')
+            setTimeout(() => row.remove(), 700)
+          }, fade * 1000)
+      }
+
+      if (channel) {
+        const es = new EventSource('/events?channel=' + encodeURIComponent(channel))
+        es.onopen = () => (hint.hidden = true)
+        es.onerror = () => {
+          hint.hidden = false
+          hint.textContent = 'Waiting for Kixo…'
+        }
+        es.onmessage = (e) => {
+          const ev = JSON.parse(e.data)
+          if (ev.type === 'msg') render(ev)
+          else if (ev.type === 'delete') chat.querySelector(`[data-id="${CSS.escape(ev.id)}"]`)?.remove()
+          else if (ev.type === 'ban') chat.querySelectorAll(`[data-user="${CSS.escape(String(ev.userId))}"]`).forEach((n) => n.remove())
+          else if (ev.type === 'clear') chat.replaceChildren()
+        }
+      }
+    </script>
+  </body>
+</html>
