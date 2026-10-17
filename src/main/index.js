@@ -96,7 +96,9 @@ function publicState() {
     authMode: authMode().kind,
     version: app.getVersion(),
     overlayPort: OVERLAY_PORT,
-    platform: process.platform
+    platform: process.platform,
+    // KIXO_DEMO=1 exposes a hook used to stage website screenshots.
+    demo: !!process.env.KIXO_DEMO
   }
 }
 

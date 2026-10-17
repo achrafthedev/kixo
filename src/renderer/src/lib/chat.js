@@ -46,7 +46,16 @@ export async function init() {
   if (first) setActive(first.slug)
 
   setInterval(flush, 80)
-  setInterval(refreshInfo, 60_000)
+  if (s.demo) {
+    // Screenshot staging only: feed raw Kick events through the real pipeline.
+    window.__kixoDemo = {
+      store,
+      feed: (slug, event, data) => rooms.get(slug) && onEvent(rooms.get(slug), { event, data }),
+      patch: patchChannel
+    }
+  } else {
+    setInterval(refreshInfo, 60_000)
+  }
 }
 
 export async function addChannel(input, { activate = true, persist = true } = {}) {
