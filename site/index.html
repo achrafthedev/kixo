@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kixo — the fast, free chat client for Kick</title>
+    <meta name="description" content="Kixo is a free, open-source desktop chat client for Kick. Multi-chat tabs, Kick + 7TV emotes, mod tools, mentions, and an OBS chat overlay. Built on Kick's official API." />
+    <meta name="theme-color" content="#07080a" />
+    <link rel="canonical" href="https://kixo.app/" />
+    <link rel="icon" type="image/svg+xml" href="/assets/logo.svg" />
+    <link rel="apple-touch-icon" href="/assets/icon-512.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://kixo.app/" />
+    <meta property="og:title" content="Kixo — the fast, free chat client for Kick" />
+    <meta property="og:description" content="Multi-chat tabs, Kick + 7TV emotes, mod tools and an OBS overlay. Free & open source." />
+    <meta property="og:image" content="https://kixo.app/assets/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header class="nav">
+      <div class="wrap nav-inner">
+        <a class="brand" href="/" aria-label="Kixo home">
+          <img src="/assets/logo.svg" alt="" width="30" height="30" />
+          <span>kixo</span>
+        </a>
+        <nav class="nav-links">
+          <a href="#features">Features</a>
+          <a href="#streamers">For streamers</a>
+          <a href="#tour">Tour</a>
+          <a href="#faq">FAQ</a>
+          <a href="https://github.com/achrafthedev/kixo" target="_blank" rel="noopener">GitHub</a>
+        </nav>
+        <a class="btn btn-primary btn-sm" href="#download">Download</a>
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="wrap hero-grid">
+          <div class="hero-copy">
+            <a class="pill" href="https://github.com/achrafthedev/kixo/releases/latest" target="_blank" rel="noopener">
+              <span class="dot"></span> <span data-version>v1.0.0</span> is out — free &amp; open source
+            </a>
+            <h1>Kick chat,<br /><span class="grad">finally fast.</span></h1>
+            <p class="lead">
+              Kixo is a lightweight desktop chat client for Kick. Every chat you follow in one window, with Kick &amp; 7TV emotes, real badges, mod tools and an OBS overlay —
+              built on Kick's official API.
+            </p>
+            <div class="cta-row">
+              <a class="btn btn-primary btn-lg" data-dl="setup" href="https://github.com/achrafthedev/kixo/releases/latest">
+                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M3 5.5 10.5 4.5v7H3zm0 13 7.5 1v-7H3zM11.5 4.4 21 3v8.5h-9.5zm0 15.2L21 21v-8.5h-9.5z" /></svg>
+                Download for Windows
+              </a>
+              <a class="btn btn-ghost btn-lg" href="https://github.com/achrafthedev/kixo" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z" /></svg>
+                Star on GitHub
+              </a>
+            </div>
+            <p class="meta"><span data-size>~100 MB</span> · Windows 10/11 · macOS &amp; Linux coming soon · No account needed to read chat</p>
+          </div>
+
+          <div class="hero-visual">
+            <div class="window window-main">
+              <img src="/assets/shots/main.webp" width="440" height="780" alt="Kixo showing CES4Rrs's live Kick chat with custom emotes, sub badges and a gifted subs alert" />
+            </div>
+            <div class="window window-float float-a">
+              <img src="/assets/shots/usercard.webp" width="440" height="780" alt="" loading="lazy" />
+            </div>
+            <div class="tag tag-a"><b>7TV + Kick</b> emotes</div>
+            <div class="tag tag-b"><b>1-click</b> timeouts</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SHOWCASE STREAMER -->
+      <section class="spotlight-wrap" id="spotlight">
+        <div class="wrap">
+          <a class="spotlight" href="https://kick.com/ces4rrs" target="_blank" rel="noopener">
+            <img class="spot-bg" src="/assets/ces4rrs-bunny.webp" alt="" loading="lazy" />
+            <div class="spot-body">
+              <img class="spot-avatar" src="/assets/ces4rrs-avatar-160.webp" alt="CES4Rrs" width="72" height="72" />
+              <div>
+                <div class="spot-kicker">Showcase streamer</div>
+                <div class="spot-name">
+                  CES4Rrs
+                  <svg class="verified" viewBox="0 0 24 24" width="20" height="20" aria-label="Verified"><path fill="#53fc18" d="m12 1 2.6 2 3.3-.3 1 3.1 2.8 1.8-1 3.1 1 3.2-2.8 1.7-1 3.2-3.3-.3L12 23l-2.6-2-3.3.3-1-3.1-2.8-1.8 1-3.1-1-3.2 2.8-1.7 1-3.2 3.3.3z" /><path d="m7.5 12.2 3 3 6-6.2" stroke="#000" stroke-width="2.2" fill="none" /></svg>
+                  <span class="live-badge" data-live hidden>LIVE</span>
+                </div>
+                <div class="spot-sub"><span data-followers>46K</span> followers · Bunny on Bobony Roleplay · nightly at 10 PM</div>
+              </div>
+              <span class="btn btn-primary spot-cta">Watch on Kick →</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- FEATURES -->
+      <section class="section" id="features">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Features</span>
+            <h2>Everything Kick chat should have been.</h2>
+            <p>Built for chatters who follow ten streams, mods who need to act fast, and streamers who want chat on top of their game.</p>
+          </div>
+          <div class="grid features">
+            <article class="card">
+              <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2zM8 9h8M8 13h5"/></svg></div>
+              <h3>All your chats, one window</h3>
+              <p>Tabs for every channel with live dots and unread counters. Drag to reorder, <kbd>Ctrl</kbd>+<kbd>1-9</kbd> to jump.</p>
+            </article>
+            <article class="card">
+              <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21a9 9 0 100-18 9 9 0 000 18zM8 14s1.5 2 4 2 4-2 4-2M7 9h3.5M13.5 9H17"/></svg></div>
+              <h3>Kick + 7TV emotes</h3>
+              <p>Channel and global emotes from Kick and 7TV, a searchable picker, <code>:emote</code> autocomplete and Tab-completion.</p>
+            </article>
+            <article class="card">
+              <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4"/></svg></div>
+              <h3>Mod tools that keep up</h3>
+              <p>Hover a message to delete or time out. User cards show account age, follow date, sub months and recent messages.</p>
+            </article>
+            <article class="card">
+              <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg></div>
+              <h3>Never miss a mention</h3>
+              <p>A Mentions tab across every channel, custom highlight words, sound + desktop notifications.</p>
+            </article>
+            <article class="card">
+              <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M7 12h10M10 18h4"/></svg></div>
+              <h3>Clean chat, your rules</h3>
+              <p>Hide bots, ignore users, search chat with <kbd>Ctrl</kbd>+<kbd>F</kbd>. Chat pauses when you scroll up — no more losing your place.</p>
+            </article>
+            <article class="card">
+              <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9z"/></svg></div>
+              <h3>Fast &amp; light</h3>
+              <p>One connection for all channels, batched rendering, ~300 KB of UI. Smooth even in the busiest chats.</p>
+            </article>
+            <article class="card">
+              <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 110-20c5.5 0 10 4 10 9a5 5 0 01-5 5h-2a2 2 0 00-1 3.7A1.5 1.5 0 0112 22zM7.5 11h.01M10.5 7h.01M15.5 7.5h.01"/></svg></div>
+              <h3>Make it yours</h3>
+              <p>Dark, Midnight (OLED), Slate and Light themes, any accent colour, font &amp; emote size, compact mode.</p>
+            </article>
+            <article class="card">
+              <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.1V12a10 10 0 11-5.9-9.1M22 4L12 14l-3-3"/></svg></div>
+              <h3>Official Kick API</h3>
+              <p>Login, sending and moderation use Kick's official OAuth API. Tokens are encrypted by your OS keychain.</p>
+            </article>
+            <article class="card">
+              <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 11-3-6.7L21 8M21 3v5h-5"/></svg></div>
+              <h3>Always up to date</h3>
+              <p>Automatic updates in the background. Free forever, open source under MIT.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- STREAMERS -->
+      <section class="section section-alt" id="streamers">
+        <div class="wrap two-col">
+          <div>
+            <span class="eyebrow">For streamers</span>
+            <h2>Your chat, on stream. In one click.</h2>
+            <p class="big">
+              Kixo ships with a built-in <b>OBS chat overlay</b>: same emotes, badges and colours as the app, transparent background, auto-fading messages. Add it as a
+              Browser Source and you're done.
+            </p>
+            <div class="code">
+              <span class="code-label">OBS → Sources → Browser</span>
+              <code>http://127.0.0.1:4848/overlay?channel=ces4rrs&amp;fade=30</code>
+              <button class="copy" data-copy="http://127.0.0.1:4848/overlay?channel=ces4rrs&fade=30">Copy</button>
+            </div>
+            <ul class="checks">
+              <li><b>Stream manager</b> — change your title and category without opening kick.com</li>
+              <li><b>Always on top</b> + adjustable opacity — keep chat over your game on one monitor</li>
+              <li><b>Sub, gift, host &amp; KICKs alerts</b> right in chat, plus pinned messages and polls</li>
+            </ul>
+          </div>
+          <div class="scene" aria-label="Demo of the Kixo OBS overlay on CES4Rrs's stream">
+            <img src="/assets/ces4rrs-scene.webp" alt="" loading="lazy" />
+            <div class="scene-live"><span></span>LIVE · CES4Rrs</div>
+            <div class="overlay-demo" id="overlay-demo"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TOUR -->
+      <section class="section" id="tour">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Take the tour</span>
+            <h2>See it in action.</h2>
+            <p>Kixo running on CES4Rrs's channel — click through the features.</p>
+          </div>
+          <div class="tour">
+            <div class="tour-tabs" role="tablist">
+              <button class="on" data-shot="main" data-cap="Live chat with custom channel emotes, sub badges, replies and gift alerts.">Chat</button>
+              <button data-shot="emotes" data-cap="Searchable emote picker with every Kick and 7TV emote, plus your recently used.">Emotes</button>
+              <button data-shot="usercard" data-cap="User cards with one-click timeouts, ban/unban and recent messages.">User card</button>
+              <button data-shot="mentions" data-cap="Every @mention and highlight word, across all channels, in one place.">Mentions</button>
+              <button data-shot="midnight" data-cap="Midnight (OLED) theme with a custom accent colour.">Midnight</button>
+              <button data-shot="light" data-cap="Light theme for daytime streams.">Light</button>
+              <button data-shot="settings" data-cap="Fine-tune fonts, emote size, filters, alerts and the window.">Settings</button>
+            </div>
+            <div class="tour-stage">
+              <div class="window window-tour"><img id="tour-img" src="/assets/shots/main.webp" width="440" height="780" alt="Kixo screenshot" /></div>
+              <p class="tour-cap" id="tour-cap">Live chat with custom channel emotes, sub badges, replies and gift alerts.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DOWNLOAD -->
+      <section class="section section-alt" id="download">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Download</span>
+            <h2>Get Kixo — it's free.</h2>
+            <p>Latest version: <b data-version>v1.0.0</b></p>
+          </div>
+          <div class="grid downloads">
+            <a class="dl-card primary" data-dl="setup" href="https://github.com/achrafthedev/kixo/releases/latest">
+              <div class="dl-os">Windows</div>
+              <div class="dl-title">Installer</div>
+              <div class="dl-sub">Recommended · auto-updates</div>
+              <span class="btn btn-primary">Download .exe</span>
+            </a>
+            <a class="dl-card" data-dl="portable" href="https://github.com/achrafthedev/kixo/releases/latest">
+              <div class="dl-os">Windows</div>
+              <div class="dl-title">Portable</div>
+              <div class="dl-sub">No install — run from anywhere</div>
+              <span class="btn btn-ghost">Download .exe</span>
+            </a>
+            <div class="dl-card soon">
+              <div class="dl-os">macOS</div>
+              <div class="dl-title">Apple Silicon &amp; Intel</div>
+              <div class="dl-sub">Coming soon</div>
+              <span class="btn btn-ghost" aria-disabled="true">Soon</span>
+            </div>
+            <div class="dl-card soon">
+              <div class="dl-os">Linux</div>
+              <div class="dl-title">AppImage &amp; .deb</div>
+              <div class="dl-sub">Coming soon</div>
+              <span class="btn btn-ghost" aria-disabled="true">Soon</span>
+            </div>
+          </div>
+          <p class="note">
+            Windows may show “Windows protected your PC” because Kixo isn't code-signed yet. Click <b>More info → Run anyway</b>. The source is
+            <a href="https://github.com/achrafthedev/kixo" target="_blank" rel="noopener">fully open</a>.
+          </p>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="section" id="faq">
+        <div class="wrap narrow">
+          <div class="section-head">
+            <span class="eyebrow">FAQ</span>
+            <h2>Questions, answered.</h2>
+          </div>
+          <details>
+            <summary>Is Kixo free?</summary>
+            <p>Yes — free forever and open source under the MIT license. No ads, no tracking.</p>
+          </details>
+          <details>
+            <summary>Do I need a Kick account?</summary>
+            <p>Not to read chat. Log in with Kick when you want to send messages, moderate, or edit your stream info.</p>
+          </details>
+          <details>
+            <summary>Is it safe? Does it use the official API?</summary>
+            <p>
+              Sending messages, moderation and stream edits go through Kick's official Public API with OAuth 2.1. Kixo never sees your password, and tokens are encrypted
+              with your operating system's keychain. The live chat feed uses the same public stream kick.com shows logged-out viewers.
+            </p>
+          </details>
+          <details>
+            <summary>Does it support 7TV emotes?</summary>
+            <p>Yes — channel and global 7TV emotes render automatically next to Kick emotes. You can turn them off in Settings.</p>
+          </details>
+          <details>
+            <summary>How do I add chat to OBS?</summary>
+            <p>
+              In OBS add a <b>Browser Source</b> with <code>http://127.0.0.1:4848/overlay?channel=yourname</code> while Kixo is running. Options like <code>&amp;fade=30</code>,
+              <code>&amp;size=18</code> and <code>&amp;bots=0</code> let you tune it.
+            </p>
+          </details>
+          <details>
+            <summary>Is Kixo made by Kick?</summary>
+            <p>No. Kixo is an independent community project and isn't affiliated with or endorsed by Kick.</p>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap footer-inner">
+        <div class="brand"><img src="/assets/logo.svg" alt="" width="24" height="24" /><span>kixo</span></div>
+        <p>Made with 💚 in Morocco · Showcase streamer <a href="https://kick.com/ces4rrs" target="_blank" rel="noopener">CES4Rrs</a></p>
+        <p class="dim">Free &amp; open source (MIT) · Not affiliated with Kick · <a href="https://github.com/achrafthedev/kixo" target="_blank" rel="noopener">GitHub</a></p>
+      </div>
+    </footer>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>

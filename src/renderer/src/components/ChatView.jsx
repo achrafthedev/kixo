@@ -1,9 +1,9 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { plainText } from '../lib/parse.js'
+import { plainText, tokenize } from '../lib/parse.js'
 import { useStore } from '../lib/store.js'
 import ChatInput from './ChatInput.jsx'
 import Icon from './Icon.jsx'
-import Message from './Message.jsx'
+import Message, { Segments } from './Message.jsx'
 
 function useUptime(startedAt) {
   const [, tick] = useState(0)
@@ -101,7 +101,7 @@ function Pinned({ pin }) {
     <div className={`pinned ${open ? '' : 'collapsed'}`} onClick={() => setOpen(!open)}>
       <Icon name="pin" size={13} />
       <span>
-        <b style={{ color: m.sender?.identity?.color }}>{m.sender?.username}</b>: {plainText(m.content || '')}
+        <b style={{ color: m.sender?.identity?.color }}>{m.sender?.username}</b>: <Segments segments={tokenize(m.content || '', null)} />
       </span>
     </div>
   )
