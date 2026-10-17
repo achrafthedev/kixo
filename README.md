@@ -15,7 +15,11 @@
   <a href="https://github.com/achrafthedev/kixo/releases/latest">Linux</a>
 </p>
 
-<p align="center"><img src="docs/screenshot.png" width="420" alt="Kixo screenshot" /></p>
+<p align="center"><img src="docs/screenshot.png" width="420" alt="Kixo running on CES4Rrs's and Nahoule82k's Kick chats" /></p>
+
+<p align="center">
+  Featured streamers: <a href="https://kick.com/ces4rrs"><b>CES4Rrs</b></a> · <a href="https://kick.com/nahoule82k"><b>Nahoule82k</b></a>
+</p>
 
 ## Features
 
