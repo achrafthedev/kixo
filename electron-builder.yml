@@ -1,0 +1,56 @@
+appId: app.kixo.desktop
+productName: Kixo
+copyright: Copyright © 2026 Kixo contributors
+directories:
+  buildResources: build
+  output: dist
+compression: maximum
+electronLanguages:
+  - en-US
+files:
+  - out/**
+  - resources/icon.png
+  - package.json
+  - '!**/*.map'
+extraResources:
+  - from: resources/overlay
+    to: overlay
+win:
+  icon: build/icon.ico
+  executableName: Kixo
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+nsis:
+  artifactName: Kixo-Setup-${version}.${ext}
+  oneClick: true
+  perMachine: false
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: Kixo
+  deleteAppDataOnUninstall: false
+portable:
+  artifactName: Kixo-Portable-${version}.${ext}
+mac:
+  icon: build/icon.png
+  category: public.app-category.social-networking
+  target:
+    - target: dmg
+      arch: [x64, arm64]
+dmg:
+  artifactName: Kixo-${version}-${arch}.${ext}
+linux:
+  icon: build/icon.png
+  category: Network
+  target:
+    - AppImage
+    - deb
+  artifactName: Kixo-${version}.${ext}
+  maintainer: achrafthedev
+publish:
+  provider: github
+  owner: achrafthedev
+  repo: kixo
+  releaseType: release

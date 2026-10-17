@@ -1,0 +1,7 @@
+name = "kixo-auth"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+
+[vars]
+# Public client id of your Kick app (the secret goes in `wrangler secret put KICK_CLIENT_SECRET`)
+KICK_CLIENT_ID = ""
