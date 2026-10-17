@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { addChannel, login } from '../lib/chat.js'
 import { useStore } from '../lib/store.js'
 
-const POPULAR = ['xqc', 'adinross', 'amouranth', 'trainwreckstv', 'westcol']
+const FEATURED = ['ces4rrs', 'nahoule82k']
 
 export default function Welcome() {
   const [v, setV] = useState('')
@@ -26,7 +26,7 @@ export default function Welcome() {
         </button>
       </form>
       <div className="chips">
-        {POPULAR.map((p) => (
+        {FEATURED.map((p) => (
           <button key={p} className="chip" onClick={() => addChannel(p)}>
             {p}
           </button>

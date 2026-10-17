@@ -58,39 +58,35 @@ for (const b of $$('[data-copy]')) {
   })
 }
 
-// OBS overlay demo — mirrors what Kixo's overlay renders.
-const demo = $('#overlay-demo')
-if (demo) {
-  const e = (n) => `<img src="/assets/emotes/c4-${n}.webp" alt="${n}">`
-  const sub = '#53fc18'
-  const lines = [
-    ['nightowl_ma', '#00C7FF', sub, `BUNNY IS BACK ${e('hi')}`],
-    ['bunny_fan212', '#FF6BD6', '#ff9d00', `${e('pog')} ${e('pog')} that chase!!`],
-    ['lfakir', '#FFB020', '#1f9f6f', `salam C4 family ${e('love')}`],
-    ['kenitra_king', '#4DD0E1', sub, `Just one more game 👑`],
-    ['sara.gta', '#A970FF', sub, `6 months with the C4 family ${e('love')}`],
-    ['youssef_exe', '#9CFF57', null, `no way he got away ${e('noway')}`],
-    ['hamza_lv', '#FF5C5C', null, `${e('lol')} ${e('lol')}`],
-    ['zak_c4', '#53FC18', '#00c7ff', `GG ${e('gg')} best RP on Kick`],
-    ['moha.rp', '#FFD54F', sub, `Bunny is cooking tonight ${e('oh')}`],
-    ['salma_x', '#F48FB1', null, `W stream ${e('good')}`]
-  ]
-  let i = 0
-  const push = () => {
-    const [name, color, badge, html] = lines[i++ % lines.length]
-    const row = document.createElement('div')
-    row.className = 'ov'
-    row.innerHTML = `${badge ? `<span class="b" style="background:${badge}"></span>` : ''}<span class="n" style="color:${color}">${name}</span>: ${html}`
-    demo.append(row)
-    while (demo.children.length > 7) demo.firstChild.remove()
+// Overlay builder: kixo.app/overlay?channel=... with a live iframe preview.
+const bChan = $('#b-channel')
+if (bChan) {
+  const frame = $('#overlay-frame')
+  const liveTag = $('.scene-live')
+  let t = null
+  const update = () => {
+    const slug =
+      bChan.value
+        .trim()
+        .toLowerCase()
+        .replace(/^https?:\/\/(www\.)?kick\.com\//, '')
+        .replace(/[^a-z0-9_-]/g, '') || 'yourchannel'
+    const q = new URLSearchParams({ channel: slug })
+    if ($('#b-fade').value !== '0') q.set('fade', $('#b-fade').value)
+    if ($('#b-size').value !== '18') q.set('size', $('#b-size').value)
+    if ($('#b-bg').checked) q.set('bg', '1')
+    if ($('#b-bots').checked) q.set('bots', '0')
+    const url = `https://kixo.app/overlay?${q}`
+    $('#b-url').textContent = url
+    $('#b-copy').dataset.copy = url
+    liveTag.lastChild.textContent = `LIVE · ${slug}`
+    clearTimeout(t)
+    t = setTimeout(() => {
+      q.set('demo', '1')
+      frame.src = `/overlay?${q}`
+    }, 400)
   }
-  for (let k = 0; k < 4; k++) push()
-  let timer = null
-  const io = new IntersectionObserver(([en]) => {
-    clearInterval(timer)
-    if (en.isIntersecting) timer = setInterval(push, 1600)
-  })
-  io.observe(demo)
+  for (const id of ['#b-channel', '#b-fade', '#b-size', '#b-bg', '#b-bots']) $(id).addEventListener('input', update)
 }
 
 // Scroll reveal

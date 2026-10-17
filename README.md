@@ -15,7 +15,11 @@
   <a href="https://github.com/achrafthedev/kixo/releases/latest">Linux</a>
 </p>
 
-<p align="center"><img src="docs/screenshot.png" width="420" alt="Kixo screenshot" /></p>
+<p align="center"><img src="docs/screenshot.png" width="420" alt="Kixo running on CES4Rrs's and Nahoule82k's Kick chats" /></p>
+
+<p align="center">
+  Featured streamers: <a href="https://kick.com/ces4rrs"><b>CES4Rrs</b></a> · <a href="https://kick.com/nahoule82k"><b>Nahoule82k</b></a>
+</p>
 
 ## Features
 
@@ -39,7 +43,7 @@
 
 **Streamer tools**
 - **Stream manager**: change your stream title and category without opening kick.com
-- **OBS chat overlay**: a transparent browser source with emotes and badges (`http://127.0.0.1:4848/overlay?channel=you`)
+- **OBS chat overlay**: a transparent browser source with emotes and badges, with nothing to install: `https://kixo.app/overlay?channel=you` (build yours at [kixo.app](https://kixo.app/#streamers))
 - Always-on-top and adjustable window opacity, so chat can sit on top of a game
 
 **App**

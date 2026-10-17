@@ -6,9 +6,13 @@
 // stores nothing.
 //
 // Deploy:  npx wrangler deploy   (then: npx wrangler secret put KICK_CLIENT_SECRET)
-// Vars:    KICK_CLIENT_ID, KICK_CLIENT_SECRET
+// Vars:    KICK_CLIENT_ID, KICK_CLIENT_SECRET, REDIRECT_URI (optional)
+//
+// The redirect is a hosted HTTPS page (site/auth/callback) that bounces the code
+// back to the desktop app's localhost listener, so the Kick app only needs this
+// one redirect registered.
 
-const REDIRECT_URI = 'http://localhost:53682/callback'
+const DEFAULT_REDIRECT_URI = 'https://kixo.app/auth/callback'
 const KICK_TOKEN = 'https://id.kick.com/oauth/token'
 
 const json = (body, status = 200) =>
@@ -34,7 +38,7 @@ export default {
         grant_type: 'authorization_code',
         code: String(body.code),
         code_verifier: String(body.code_verifier),
-        redirect_uri: REDIRECT_URI
+        redirect_uri: env.REDIRECT_URI || DEFAULT_REDIRECT_URI
       }
     } else if (url.pathname === '/refresh') {
       if (!body.refresh_token) return json({ error: 'missing_refresh_token' }, 400)

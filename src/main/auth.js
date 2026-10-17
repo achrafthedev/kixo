@@ -4,6 +4,7 @@ import { createServer } from 'node:http'
 import {
   BUILT_IN_AUTH_PROXY,
   BUILT_IN_CLIENT_ID,
+  BUILT_IN_REDIRECT,
   KICK_API,
   KICK_ID,
   OAUTH_PORT,
@@ -14,13 +15,32 @@ import { getSecrets, getState, setSecrets, setState } from './store.js'
 
 const b64url = (buf) => buf.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 
-// Which credentials are in play: the user's own Kick app (Settings → Account),
-// or the official build's client id + hosted token-exchange proxy.
-export function authMode() {
-  const byo = getState().byoClientId && getSecrets().byoClientSecret
-  if (byo) return { kind: 'byo', clientId: getState().byoClientId, clientSecret: getSecrets().byoClientSecret }
-  if (BUILT_IN_CLIENT_ID && BUILT_IN_AUTH_PROXY) return { kind: 'proxy', clientId: BUILT_IN_CLIENT_ID, proxy: BUILT_IN_AUTH_PROXY }
-  return { kind: 'none' }
+const officialMode = () =>
+  BUILT_IN_CLIENT_ID && BUILT_IN_AUTH_PROXY
+    ? { kind: 'proxy', clientId: BUILT_IN_CLIENT_ID, proxy: BUILT_IN_AUTH_PROXY, redirect: BUILT_IN_REDIRECT }
+    : { kind: 'none' }
+
+// Which credentials are in play: Kixo's official app (default), or the user's
+// own Kick app when they switched "Use my own Kick app" on in Settings → Account.
+export function authMode(kind) {
+  const s = getState()
+  const byoReady = s.byoClientId && getSecrets().byoClientSecret
+  const wantByo = kind ? kind === 'byo' : s.useByo && byoReady
+  if (wantByo && byoReady) {
+    return { kind: 'byo', clientId: s.byoClientId, clientSecret: getSecrets().byoClientSecret, redirect: OAUTH_REDIRECT }
+  }
+  return officialMode()
+}
+
+// Turn Kick's terse token errors into something a user can act on.
+function explainTokenError(mode, status, text) {
+  if (status === 401 || /invalid_client|unauthorized/i.test(text)) {
+    return mode.kind === 'byo'
+      ? `Kick rejected the login (401). Check your Client ID/Secret, and that your Kick app's redirect URL is exactly ${mode.redirect}`
+      : 'Kick rejected the login (401). Please try again; if it keeps failing, report it on GitHub.'
+  }
+  if (status === 429) return 'Too many login attempts. Wait a minute and try again.'
+  return `Kick login failed (${status}) ${text.slice(0, 160)}`
 }
 
 async function tokenRequest(mode, params) {
@@ -39,16 +59,17 @@ async function tokenRequest(mode, params) {
       body: JSON.stringify(params)
     })
   } else {
-    throw new Error('No Kick app configured. Add your Client ID and Secret in Settings → Account.')
+    throw new Error('Login is unavailable in this build. Add your own Kick app in Settings → Account.')
   }
   const text = await res.text()
-  if (!res.ok) throw new Error(`Kick token request failed (${res.status}) ${text.slice(0, 200)}`)
+  if (!res.ok) throw new Error(explainTokenError(mode, res.status, text))
   const tok = JSON.parse(text)
   return {
     accessToken: tok.access_token,
     refreshToken: tok.refresh_token,
     expiresAt: Date.now() + (Number(tok.expires_in) || 3600) * 1000,
-    scope: tok.scope || ''
+    scope: tok.scope || '',
+    mode: mode.kind // refresh through the same path that issued the token
   }
 }
 
@@ -58,7 +79,7 @@ export function login() {
   if (pendingLogin) return pendingLogin.promise
   const mode = authMode()
   if (mode.kind === 'none') {
-    return Promise.reject(new Error('No Kick app configured. Add your Client ID and Secret in Settings → Account.'))
+    return Promise.reject(new Error('Login is unavailable in this build. Add your own Kick app in Settings → Account.'))
   }
   const verifier = b64url(randomBytes(48))
   const challenge = b64url(createHash('sha256').update(verifier).digest())
@@ -67,6 +88,7 @@ export function login() {
   let resolve, reject
   const promise = new Promise((res, rej) => ((resolve = res), (reject = rej)))
   const server = createServer(async (req, res) => {
+    // Official mode: Kick → kixo.app/auth/callback → here. BYO: Kick → here.
     const url = new URL(req.url, OAUTH_REDIRECT)
     if (url.pathname !== '/callback') return res.writeHead(404).end()
     const code = url.searchParams.get('code')
@@ -79,7 +101,7 @@ export function login() {
         grant_type: 'authorization_code',
         code,
         code_verifier: verifier,
-        redirect_uri: OAUTH_REDIRECT
+        redirect_uri: mode.redirect
       })
       setSecrets({ tokens })
       const me = await fetchMe()
@@ -100,7 +122,7 @@ export function login() {
     const q = new URLSearchParams({
       response_type: 'code',
       client_id: mode.clientId,
-      redirect_uri: OAUTH_REDIRECT,
+      redirect_uri: mode.redirect,
       scope: SCOPES.join(' '),
       code_challenge: challenge,
       code_challenge_method: 'S256',
@@ -130,7 +152,7 @@ export async function getAccessToken() {
   if (!tokens?.accessToken) return null
   if (tokens.expiresAt - Date.now() > 60_000) return tokens.accessToken
   if (!tokens.refreshToken) return null
-  refreshing ??= tokenRequest(authMode(), { grant_type: 'refresh_token', refresh_token: tokens.refreshToken })
+  refreshing ??= tokenRequest(authMode(tokens.mode || 'proxy'), { grant_type: 'refresh_token', refresh_token: tokens.refreshToken })
     .then((t) => (setSecrets({ tokens: t }), t.accessToken))
     .catch(() => (setSecrets({ tokens: null }), setState({ user: null }), null))
     .finally(() => (refreshing = null))

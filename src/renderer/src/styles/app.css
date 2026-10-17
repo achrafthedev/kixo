@@ -1312,6 +1312,36 @@ kbd {
   height: 40px;
   border-radius: 50%;
 }
+.methods {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.method {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--panel2);
+}
+.method b {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.method.on {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+@media (max-width: 520px) {
+  .methods {
+    grid-template-columns: 1fr;
+  }
+}
 .byo ol {
   padding-left: 18px;
   margin: 4px 0 8px;

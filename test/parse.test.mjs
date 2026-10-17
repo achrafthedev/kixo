@@ -4,7 +4,7 @@ import { encodeOutgoing, normalizeChat, normalizeEvent, resolveBadges, subBadgeF
 
 test('tokenize: kick emote tags, 7TV words, links and mentions', () => {
   const stv = new Map([['KEKW', { url: 'https://cdn.7tv.app/emote/1/2x.webp', provider: '7tv' }]])
-  const segs = tokenize('hi [emote:37226:KEKW] KEKW @Bob, see https://kick.com/xqc.', stv)
+  const segs = tokenize('hi [emote:37226:KEKW] KEKW @Bob, see https://kick.com/ces4rrs.', stv)
   assert.deepEqual(
     segs.map((s) => s.type),
     ['text', 'emote', 'text', 'emote', 'text', 'mention', 'text', 'link', 'text']
@@ -13,7 +13,7 @@ test('tokenize: kick emote tags, 7TV words, links and mentions', () => {
   assert.equal(segs[1].provider, 'kick')
   assert.equal(segs[3].provider, '7tv')
   assert.equal(segs[5].username, 'Bob')
-  assert.equal(segs[7].href, 'https://kick.com/xqc')
+  assert.equal(segs[7].href, 'https://kick.com/ces4rrs')
 })
 
 test('tokenize: plain text is merged into one segment', () => {

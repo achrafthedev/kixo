@@ -10,6 +10,8 @@ import { flushState, getSecrets, getState, setSecrets, setState } from './store.
 const { autoUpdater } = updater
 let win = null
 
+// Dev/testing: run a second instance with its own profile (and lock).
+if (process.env.KIXO_USER_DATA) app.setPath('userData', process.env.KIXO_USER_DATA)
 if (!app.requestSingleInstanceLock()) app.quit()
 app.on('second-instance', () => {
   if (!win) return
@@ -93,6 +95,7 @@ function publicState() {
     user: s.user || null,
     byoClientId: s.byoClientId || '',
     hasByoSecret: !!getSecrets().byoClientSecret,
+    useByo: !!s.useByo,
     authMode: authMode().kind,
     version: app.getVersion(),
     overlayPort: OVERLAY_PORT,
@@ -123,9 +126,14 @@ function registerIpc() {
     }
     return true
   })
-  handle('byo:set', ({ clientId, clientSecret }) => {
-    setState({ byoClientId: (clientId || '').trim() })
+  handle('byo:set', ({ clientId, clientSecret, useByo }) => {
+    if (clientId !== undefined) setState({ byoClientId: (clientId || '').trim() })
     if (clientSecret !== undefined) setSecrets({ byoClientSecret: (clientSecret || '').trim() || null })
+    if (useByo !== undefined) {
+      // Switching login method invalidates the current session's refresh path.
+      if (!!useByo !== !!getState().useByo) logout()
+      setState({ useByo: !!useByo })
+    }
     return publicState()
   })
 

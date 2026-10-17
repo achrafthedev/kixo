@@ -6,7 +6,6 @@ import Icon from './Icon.jsx'
 // Streamer tools for the logged-in user's own channel (official API).
 export default function StreamManager() {
   const user = useStore((s) => s.user)
-  const port = useStore((s) => s.overlayPort)
   const [ch, setCh] = useState(null)
   const [error, setError] = useState(null)
   const [title, setTitle] = useState('')
@@ -46,7 +45,7 @@ export default function StreamManager() {
   }
 
   const slug = ch?.slug || user?.username?.toLowerCase()
-  const overlayUrl = `http://127.0.0.1:${port}/overlay?channel=${slug || 'yourchannel'}`
+  const overlayUrl = `https://kixo.app/overlay?channel=${slug || 'yourchannel'}&fade=30`
 
   return (
     <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && close()}>
@@ -111,7 +110,7 @@ export default function StreamManager() {
           <div className="uc-label">
             <Icon name="layers" size={13} /> OBS chat overlay
           </div>
-          <p className="dim small">Add a Browser Source in OBS with this URL (Kixo must be running). Width 400, height 600 works well.</p>
+          <p className="dim small">Add a Browser Source in OBS with this URL. It works even when Kixo is closed. Width 400, height 600 works well.</p>
           <div className="copy-row">
             <code>{overlayUrl}</code>
             <button className="btn small" onClick={() => (navigator.clipboard.writeText(overlayUrl), toast('Copied overlay URL', 'ok'))}>
