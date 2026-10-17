@@ -34,6 +34,12 @@ contextBridge.exposeInMainWorld('kixo', {
     patchChannel: (patch) => call('api:patchChannel', patch),
     categories: (q) => call('api:categories', q)
   },
+  kickweb: {
+    status: () => call('kickweb:status'),
+    connect: () => call('kickweb:connect'),
+    disconnect: () => call('kickweb:disconnect'),
+    setRole: (args) => call('kickweb:role', args)
+  },
   win: {
     minimize: () => call('win:minimize'),
     maximize: () => call('win:maximize'),

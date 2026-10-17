@@ -954,6 +954,7 @@ kbd {
   cursor: pointer;
 }
 .pill {
+  white-space: nowrap;
   font-size: 10px;
   font-weight: 700;
   padding: 1px 6px;
