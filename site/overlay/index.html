@@ -107,7 +107,7 @@
       const hint = document.getElementById('hint')
       const say = (t) => ((hint.hidden = !t), (hint.textContent = t || ''))
       const BOTS = new Set(['botrix', 'kicklet', 'kickbot', 'streamelements', 'fossabot', 'nightbot', 'sery_bot', 'moobot'])
-      const LEGACY = { moderator: '#00c7ff', vip: '#ff9d00', og: '#1f9f6f', founder: '#b0007a', verified: '#1fb15b', broadcaster: '#e9113c', staff: '#53fc18', sub_gifter: '#7b4bff', subscriber: '#53fc18' }
+      const LEGACY = { moderator: '#00c853', vip: '#ffb300', bot: '#555', og: '#1f9f6f', founder: '#b0007a', verified: '#1fb15b', broadcaster: '#e9113c', staff: '#53fc18', sub_gifter: '#7b4bff', subscriber: '#53fc18' }
       let subBadges = []
       const stv = new Map()
 
@@ -124,10 +124,17 @@
         return i
       }
 
+      // Kick: `badges` = channel roles (mod/VIP/OG/sub…), `badges_v2` = global cosmetics. Show both.
+      const ROLE_ORDER = ['broadcaster', 'staff', 'moderator', 'vip', 'og', 'founder', 'verified', 'subscriber', 'sub_gifter', 'bot']
+      const rank = (t) => (ROLE_ORDER.indexOf(t) + 1 || 99)
       function badgesFor(identity) {
-        const v2 = (identity?.badges_v2 || []).filter((b) => b.image_url && b.selected !== false)
-        if (v2.length) return v2.sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)).map((b) => img('b', b.image_url, b.name))
-        return (identity?.badges || [])
+        const cosmetics = (identity?.badges_v2 || [])
+          .filter((b) => b.image_url && b.selected !== false)
+          .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+          .map((b) => img('b', b.image_url, b.name))
+        const roles = (identity?.badges || [])
+          .slice()
+          .sort((a, b) => rank(a.type) - rank(b.type))
           .map((b) => {
             if (b.type === 'subscriber') {
               let src = null
@@ -138,9 +145,11 @@
             if (!c) return null
             const s = el('span', 'b')
             s.style.cssText = `display:inline-block;width:1.05em;background:${c}`
+            s.title = b.text || b.type
             return s
           })
           .filter(Boolean)
+        return [...roles, ...cosmetics]
       }
 
       function appendContent(row, content) {

@@ -10,8 +10,8 @@ const svg = (body, bg) =>
 // Fallback art for legacy `identity.badges` entries (when Kick sends no badges_v2).
 export const LEGACY_BADGES = {
   broadcaster: { title: 'Broadcaster', src: svg('<path d="M4 6h5l3-2v8l-3-2H4z" fill="#fff"/>', '#e9113c') },
-  moderator: { title: 'Moderator', src: svg('<path d="M4 12l5-5 1 1-5 5zM8 4l4 4 1-1-4-4z" fill="#fff"/>', '#00c7ff') },
-  vip: { title: 'VIP', src: svg('<path d="M3 6l2.5 6h5L13 6l-3 2-2-4-2 4z" fill="#fff"/>', '#ff9d00') },
+  moderator: { title: 'Moderator', src: svg('<path d="M3.5 12.5l6-6M9.5 3.5l3 3M4.5 9.5l2 2M10.5 2.5l3 3-1 1-3-3z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none"/>', '#00c853') },
+  vip: { title: 'VIP', src: svg('<path d="M3 6.5L5 4h6l2 2.5L8 13z" fill="#fff"/><path d="M3 6.5h10M6.5 4L8 13M9.5 4L8 13" stroke="#e8a500" stroke-width=".8" fill="none"/>', '#ffb300') },
   og: { title: 'OG', src: svg('<text x="8" y="11.5" font-size="7" font-weight="700" text-anchor="middle" fill="#fff" font-family="sans-serif">OG</text>', '#1f9f6f') },
   founder: { title: 'Founder', src: svg('<path d="M8 3l1.6 3.4 3.7.4-2.8 2.5.8 3.7L8 11.2 4.7 13l.8-3.7L2.7 6.8l3.7-.4z" fill="#fff"/>', '#b0007a') },
   verified: { title: 'Verified', src: svg('<path d="M5 8.5l2 2 4-4.5" stroke="#fff" stroke-width="1.8" fill="none"/>', '#1fb15b') },
@@ -29,15 +29,16 @@ export function subBadgeFor(subBadges, months) {
   return pick?.src || null
 }
 
+// Display order for channel roles, as on kick.com.
+const ROLE_ORDER = ['broadcaster', 'staff', 'moderator', 'vip', 'og', 'founder', 'verified', 'subscriber', 'sub_gifter', 'bot']
+
+// Kick sends two lists: `badges` = channel roles (mod, VIP, OG, sub, gifter,
+// verified, bot) and `badges_v2` = global cosmetics (level, founder, event
+// badges). Show both: roles first, then the cosmetics the user has selected.
 export function resolveBadges(identity, subBadges) {
-  const v2 = identity?.badges_v2 || []
-  const shown = v2.filter((b) => b.image_url && b.selected !== false)
-  if (shown.length) {
-    return shown
-      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
-      .map((b) => ({ src: b.image_url, title: prettyBadge(b.name, b.metadata) }))
-  }
-  return (identity?.badges || [])
+  const roles = (identity?.badges || [])
+    .slice()
+    .sort((a, b) => rank(a.type) - rank(b.type))
     .map((b) => {
       if (b.type === 'subscriber') {
         const src = subBadgeFor(subBadges, b.count || 1) || LEGACY_BADGES.subscriber.src
@@ -47,6 +48,16 @@ export function resolveBadges(identity, subBadges) {
       return base ? { ...base, title: b.count ? `${base.title} (${b.count})` : base.title } : null
     })
     .filter(Boolean)
+  const cosmetics = (identity?.badges_v2 || [])
+    .filter((b) => b.image_url && b.selected !== false)
+    .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+    .map((b) => ({ src: b.image_url, title: prettyBadge(b.name, b.metadata) }))
+  return [...roles, ...cosmetics]
+}
+
+const rank = (type) => {
+  const i = ROLE_ORDER.indexOf(type)
+  return i === -1 ? ROLE_ORDER.length : i
 }
 
 function prettyBadge(name = '', meta) {
