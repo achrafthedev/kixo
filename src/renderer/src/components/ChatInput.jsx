@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { getChatters, login, sendMessage } from '../lib/chat.js'
+import { commandSuggestions, runCommand } from '../lib/commands.js'
 import { store, useStore } from '../lib/store.js'
 import EmotePicker from './EmotePicker.jsx'
 import Icon from './Icon.jsx'
@@ -46,7 +47,16 @@ export default function ChatInput({ slug, channel }) {
   const computeSuggestions = (value, caret) => {
     const { word, start } = currentWord(value, caret)
     let items = []
-    if (word.startsWith('@') && word.length >= 2) {
+    if (start === 0 && word.startsWith('/') && !value.slice(0, caret).includes(' ')) {
+      items = commandSuggestions(word)
+    } else if (/^\/\w+\s+@?\w*$/.test(value.slice(0, caret)) && !word.startsWith(':')) {
+      // username argument of a command: suggest recent chatters
+      const q = word.replace(/^@/, '').toLowerCase()
+      items = getChatters(slug)
+        .filter((c) => c.username.toLowerCase().startsWith(q))
+        .slice(0, 8)
+        .map((c) => ({ kind: 'user', label: c.username, insert: c.username, color: c.color }))
+    } else if (word.startsWith('@') && word.length >= 2) {
       const q = word.slice(1).toLowerCase()
       items = getChatters(slug)
         .filter((c) => c.username.toLowerCase().startsWith(q))
@@ -108,7 +118,7 @@ export default function ChatInput({ slug, channel }) {
     if (!value || sending) return
     if ([...value].length > MAX) return
     setSending(true)
-    const ok = await sendMessage(slug, value)
+    const ok = value.startsWith('/') ? await runCommand(slug, value) : await sendMessage(slug, value)
     setSending(false)
     if (ok) {
       history.unshift(value)
@@ -188,9 +198,10 @@ export default function ChatInput({ slug, channel }) {
                 applyInsert(it.insert, sugg.start, sugg.word)
               }}
             >
-              {it.url ? <img src={it.url} alt="" /> : <Icon name="at" size={14} />}
+              {it.url ? <img src={it.url} alt="" /> : <Icon name={it.kind === 'command' ? 'gear' : 'at'} size={14} />}
               <span style={it.color ? { color: it.color } : undefined}>{it.label}</span>
               {it.provider && <span className="dim small">{it.provider === 'kick' ? 'Kick' : '7TV'}</span>}
+              {it.hint && <span className="dim small">{it.hint}</span>}
             </div>
           ))}
         </div>

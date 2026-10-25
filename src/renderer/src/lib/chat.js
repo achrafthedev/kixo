@@ -32,6 +32,11 @@ export async function init() {
     ready: true
   })
   realtime.onStatus((status) => store.set({ status }))
+  k.onAuthUser((user) => {
+    const had = store.get().user
+    store.set({ user })
+    if (had && !user) toast('Your Kick login expired. Please log in again.', 'error')
+  })
   k.updates.onStatus((update) => store.set({ update }))
   k.overlay.onWatch((slug) => {
     watched.add(slug)
@@ -371,14 +376,26 @@ function retokenize(room) {
 }
 
 export async function login() {
+  // A second click while waiting just re-opens Kick's page in the browser
+  // (the first call is still awaiting the same login).
+  if (store.get().loggingIn) {
+    k.login().catch(() => {})
+    toast('Kick login opened again in your browser', 'info')
+    return
+  }
+  store.set({ loggingIn: true })
   try {
     const user = await k.login()
     store.set({ user })
     toast(`Logged in as ${user.username}`, 'ok')
   } catch (e) {
-    toast(e.message, 'error')
+    if (e.message !== 'Login cancelled.') toast(e.message, 'error')
+  } finally {
+    store.set({ loggingIn: false })
   }
 }
+
+export const cancelLogin = () => k.cancelLogin()
 
 export async function logout() {
   await k.logout()

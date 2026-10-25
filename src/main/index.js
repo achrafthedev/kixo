@@ -1,9 +1,10 @@
 import { app, BrowserWindow, ipcMain, Menu, screen, session, shell } from 'electron'
 import { join } from 'node:path'
 import updater from 'electron-updater'
-import { authMode, kickApi, login, logout } from './auth.js'
+import { authMode, cancelLogin, kickApi, login, logout, onAuthChange } from './auth.js'
 import { OVERLAY_PORT } from './config.js'
 import { getChannel, getEmotes, getHistory, getRealtime, getUserCard } from './kick.js'
+import * as kickweb from './kickweb.js'
 import { pushOverlay, startOverlayServer, watchedSlugs } from './overlay.js'
 import { flushState, getSecrets, getState, setSecrets, setState } from './store.js'
 
@@ -144,6 +145,8 @@ function registerIpc() {
     return me
   })
   handle('auth:logout', () => logout())
+  handle('auth:cancel', () => cancelLogin())
+  onAuthChange((user) => send('auth:user', user))
 
   handle('kick:channel', (slug) => getChannel(slug))
   handle('kick:history', (channelId) => getHistory(channelId))
@@ -174,6 +177,11 @@ function registerIpc() {
   handle('api:myChannel', () => kickApi('GET', '/v1/channels').then((r) => r.data?.[0] || null))
   handle('api:patchChannel', (patch) => kickApi('PATCH', '/v1/channels', patch))
   handle('api:categories', (q) => kickApi('GET', `/v2/categories?name=${encodeURIComponent(q)}&limit=10`).then((r) => r.data || []))
+
+  handle('kickweb:status', () => kickweb.status())
+  handle('kickweb:connect', () => kickweb.connect(win))
+  handle('kickweb:disconnect', () => kickweb.disconnect())
+  handle('kickweb:role', (args) => kickweb.setRole(args))
 
   handle('win:minimize', () => win.minimize())
   handle('win:maximize', () => (win.isMaximized() ? win.unmaximize() : win.maximize()))

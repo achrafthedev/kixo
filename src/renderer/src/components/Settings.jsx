@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { login, logout, refreshAuthState, updateSettings } from '../lib/chat.js'
 import { store, toast, useStore } from '../lib/store.js'
 import Icon from './Icon.jsx'
@@ -221,6 +221,7 @@ function Account() {
           </button>
         </div>
       )}
+      <KickWebConnection />
       <div className="le-label" style={{ marginTop: 18 }}>
         Login method
       </div>
@@ -267,6 +268,49 @@ function Account() {
         </div>
       )}
     </>
+  )
+}
+
+// Optional kick.com website session for /vip /og /mod (no official API for roles yet).
+function KickWebConnection() {
+  const [st, setSt] = useState(null)
+  const [busy, setBusy] = useState(false)
+  useEffect(() => {
+    window.kixo.kickweb.status().then(setSt).catch(() => setSt({ connected: false }))
+  }, [])
+  const connect = async () => {
+    setBusy(true)
+    try {
+      const s = await window.kixo.kickweb.connect()
+      setSt(s)
+      if (s.connected) toast(`kick.com connected as ${s.username}`, 'ok')
+    } finally {
+      setBusy(false)
+    }
+  }
+  const disconnect = async () => setSt(await window.kixo.kickweb.disconnect())
+  return (
+    <div className="account-card" style={{ marginTop: 10 }}>
+      <div>
+        <div>
+          VIP / OG / Mod commands{' '}
+          {st?.connected ? <span className="pill">kick.com: {st.username}</span> : <span className="pill">not connected</span>}
+        </div>
+        <div className="dim small">
+          Kick's official API can't give roles yet, so <code>/vip</code> <code>/og</code> <code>/mod</code> use your kick.com login (kept only in Kixo on this PC).
+          {st?.expired && ' Your session expired, please reconnect.'}
+        </div>
+      </div>
+      {st?.connected ? (
+        <button className="btn" onClick={disconnect}>
+          Disconnect
+        </button>
+      ) : (
+        <button className="btn primary" disabled={busy} onClick={connect}>
+          {busy ? 'Waiting for login…' : 'Connect kick.com'}
+        </button>
+      )}
+    </div>
   )
 }
 

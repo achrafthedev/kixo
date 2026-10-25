@@ -18,6 +18,8 @@ contextBridge.exposeInMainWorld('kixo', {
   setByo: (creds) => call('byo:set', creds),
   login: () => call('auth:login'),
   logout: () => call('auth:logout'),
+  cancelLogin: () => call('auth:cancel'),
+  onAuthUser: (fn) => on('auth:user', fn),
   kick: {
     channel: (slug) => call('kick:channel', slug),
     history: (channelId) => call('kick:history', channelId),
@@ -33,6 +35,12 @@ contextBridge.exposeInMainWorld('kixo', {
     myChannel: () => call('api:myChannel'),
     patchChannel: (patch) => call('api:patchChannel', patch),
     categories: (q) => call('api:categories', q)
+  },
+  kickweb: {
+    status: () => call('kickweb:status'),
+    connect: () => call('kickweb:connect'),
+    disconnect: () => call('kickweb:disconnect'),
+    setRole: (args) => call('kickweb:role', args)
   },
   win: {
     minimize: () => call('win:minimize'),
