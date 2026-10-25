@@ -18,6 +18,8 @@ contextBridge.exposeInMainWorld('kixo', {
   setByo: (creds) => call('byo:set', creds),
   login: () => call('auth:login'),
   logout: () => call('auth:logout'),
+  cancelLogin: () => call('auth:cancel'),
+  onAuthUser: (fn) => on('auth:user', fn),
   kick: {
     channel: (slug) => call('kick:channel', slug),
     history: (channelId) => call('kick:history', channelId),

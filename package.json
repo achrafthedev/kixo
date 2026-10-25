@@ -1,7 +1,7 @@
 {
   "name": "kixo",
   "productName": "Kixo",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A fast, lightweight Kick chat client for chatters, mods and streamers.",
   "main": "./out/main/index.js",
   "author": "achrafthedev",

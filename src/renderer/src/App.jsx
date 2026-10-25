@@ -8,7 +8,7 @@ import TitleBar from './components/TitleBar.jsx'
 import Toasts from './components/Toasts.jsx'
 import UserCard from './components/UserCard.jsx'
 import Welcome from './components/Welcome.jsx'
-import { setActive } from './lib/chat.js'
+import { cancelLogin, login, setActive } from './lib/chat.js'
 import { store, useStore } from './lib/store.js'
 
 const THEMES = {
@@ -24,6 +24,7 @@ export default function App() {
   const active = useStore((s) => s.active)
   const hasChannels = useStore((s) => s.channels.length > 0)
   const modal = useStore((s) => s.modal)
+  const loggingIn = useStore((s) => s.loggingIn)
 
   useEffect(() => {
     const t = THEMES[settings.theme] || THEMES.dark
@@ -60,6 +61,18 @@ export default function App() {
     <div className={`app ${settings.compact ? 'compact' : ''}`}>
       <TitleBar />
       {ready && <Tabs />}
+      {loggingIn && (
+        <div className="login-bar">
+          <span className="spinner" />
+          <span>Approve Kixo on Kick in your browser…</span>
+          <button className="btn small" onClick={login}>
+            Open again
+          </button>
+          <button className="btn small" onClick={cancelLogin}>
+            Cancel
+          </button>
+        </div>
+      )}
       <main className="main">
         {!ready ? (
           <div className="center dim">Loading…</div>

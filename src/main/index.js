@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain, Menu, screen, session, shell } from 'electron'
 import { join } from 'node:path'
 import updater from 'electron-updater'
-import { authMode, kickApi, login, logout } from './auth.js'
+import { authMode, cancelLogin, kickApi, login, logout, onAuthChange } from './auth.js'
 import { OVERLAY_PORT } from './config.js'
 import { getChannel, getEmotes, getHistory, getRealtime, getUserCard } from './kick.js'
 import * as kickweb from './kickweb.js'
@@ -145,6 +145,8 @@ function registerIpc() {
     return me
   })
   handle('auth:logout', () => logout())
+  handle('auth:cancel', () => cancelLogin())
+  onAuthChange((user) => send('auth:user', user))
 
   handle('kick:channel', (slug) => getChannel(slug))
   handle('kick:history', (channelId) => getHistory(channelId))

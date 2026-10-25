@@ -50,13 +50,43 @@
       const q = new URLSearchParams(location.search)
       const msg = document.getElementById('msg')
       const sub = document.getElementById('sub')
-      if (q.get('error')) {
+      const state = q.get('state') || ''
+      history.replaceState(null, '', '/auth/callback')
+      if (state.startsWith('h.')) {
+        // Kixo ≥ 1.0.4: hand the code to the app through kixo.app (the app polls
+        // for it), so no localhost redirect that browsers/firewalls can block.
+        const body = q.get('code') ? { state, code: q.get('code') } : { state, error: q.get('error_description') || q.get('error') || 'cancelled' }
+        const send = (tries) =>
+          fetch('/auth/handoff', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), keepalive: true })
+            .then((r) => {
+              if (!r.ok) throw new Error(r.status)
+            })
+            .catch((e) => (tries > 0 ? new Promise((r) => setTimeout(r, 800)).then(() => send(tries - 1)) : Promise.reject(e)))
+        msg.textContent = body.code ? 'Finishing login…' : 'Login was cancelled.'
+        send(3).then(
+          () => {
+            if (body.code) {
+              msg.textContent = '✅ You\'re logged in!'
+              sub.textContent = 'Go back to Kixo, you can close this tab.'
+              setTimeout(() => window.close(), 2500)
+            } else {
+              msg.className = 'err'
+              sub.textContent = 'You can close this tab and try again from Kixo.'
+            }
+          },
+          () => {
+            msg.className = 'err'
+            msg.textContent = 'Could not reach Kixo\'s login service.'
+            sub.textContent = 'Check your internet connection and try logging in again.'
+          }
+        )
+      } else if (q.get('error')) {
         msg.className = 'err'
         msg.textContent = 'Login was cancelled or failed.'
         sub.textContent = q.get('error_description') || q.get('error')
       } else if (q.get('code') && q.get('state')) {
-        const target = 'http://localhost:53682/callback?' + new URLSearchParams({ code: q.get('code'), state: q.get('state') })
-        history.replaceState(null, '', '/auth/callback')
+        // Kixo ≤ 1.0.3: hand the code to the app's localhost listener.
+        const target = 'http://localhost:53682/callback?' + new URLSearchParams({ code: q.get('code'), state })
         location.replace(target)
         setTimeout(() => {
           msg.textContent = 'If nothing happens, make sure Kixo is open, then try logging in again.'

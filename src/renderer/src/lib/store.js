@@ -46,6 +46,7 @@ export const store = createStore({
   byoClientId: '',
   hasByoSecret: false,
   useByo: false,
+  loggingIn: false, // waiting for the user to approve on kick.com
   version: '',
   overlayPort: 4848,
   settings: DEFAULT_SETTINGS,
